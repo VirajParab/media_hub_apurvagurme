@@ -3,6 +3,8 @@ import Post from "../Models/User";
 import createError from "http-errors";
 import User from "../Models/User";
 import { Iuser } from "../Types/Iuser";
+import { Ipost } from "../Types/Ipost";
+
 import {
   UserValidation,
   UserIdValidation,
@@ -207,5 +209,49 @@ export const getUser = async (
       );
     }
     next(error);
+  }
+};
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userDetails = await User.find();
+  if (userDetails) {
+    res.status(200).json(userDetails);
+  } else {
+    return next(
+      res.status(404).json({
+        message: "Not found.",
+      })
+    );
+  }
+};
+
+export const getAllUsersWithMostPosts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userDetails = await User.find();
+  const usersWithCount = [...userDetails];
+  const posts: Ipost = await Post.find();
+
+  userDetails.forEach((user) => {
+    const userId = user["_id"];
+    const userPostCount =
+      [] || posts.filter((post) => post.user["_id"] === userId).length;
+    usersWithCount.count = userPostCount;
+  });
+
+  if (userDetails) {
+    res.status(200).json(userDetails);
+  } else {
+    return next(
+      res.status(404).json({
+        message: "Not found.",
+      })
+    );
   }
 };

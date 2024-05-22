@@ -4,4 +4,5 @@ export interface Iuser extends Document {
   username: string;
   name: string;
   surname: string;
+  count: string;
 }
